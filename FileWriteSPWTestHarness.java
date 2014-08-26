@@ -35,13 +35,13 @@ import loci.formats.FormatTools;
  * Example class that shows how to export raw pixel data to OME-TIFF as a Plate using
  * Bio-Formats version 4.2 or later.
  */
-public class FileExportSPWTestHarness {
+public class FileWriteSPWTestHarness {
   
   /**
    * Constructor
    *
    */
-  public FileExportSPWTestHarness() {         
+  public FileWriteSPWTestHarness() {         
   }
   
   /**
@@ -106,7 +106,7 @@ public class FileExportSPWTestHarness {
     int sizet = 3;
     
     FileWriteSPW SPWWriter = new FileWriteSPW(fileOut);
-    FileExportSPWTestHarness reader = new FileExportSPWTestHarness();
+    FileWriteSPWTestHarness reader = new FileWriteSPWTestHarness();
     
     byte[] plane;
     ArrayList<String> delayList = new ArrayList<>();
