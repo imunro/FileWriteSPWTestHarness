@@ -109,7 +109,7 @@ public class FileWriteSPWTestHarness {
     FileWriteSPWTestHarness reader = new FileWriteSPWTestHarness();
     
     byte[] plane;
-    ArrayList<String> delayList = new ArrayList<>();
+    ArrayList<String> delayList = new ArrayList<String>();
     delayList.add("1000");
     delayList.add("2000");
     delayList.add("3000");
@@ -126,7 +126,7 @@ public class FileWriteSPWTestHarness {
         }
       }
       SPWWriter.cleanup();
-      }  
+    }  
   }  
 }
 
