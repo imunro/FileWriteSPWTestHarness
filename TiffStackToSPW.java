@@ -95,27 +95,24 @@ public class TiffStackToSPW {
   public static void main(String[] args) throws Exception {
     
     // Directory path here
-    //String path = "/Users/imunro/globalprocessing/GlobalProcessingFrontEnd/ParisMeetingData/2012-07-26_16-59-47";
-    //String fileOut  = path + "/" + "SPWFromJava.ome.tiff";
-    String fileOut = "SPWFromJava.ome.tiff";
+    String path = "/Users/imunro/globalprocessing/GlobalProcessingFrontEnd/ParisMeetingData/2012-07-26_16-59-47";
+    String fileOut  = path + "/" + "SPWFromJava.ome.tiff";
     
-    //String subdir;
-    //String[] subdirs;
-  //  File folder = new File(path);
-  //  File[] listOfFiles = folder.listFiles();
+    
+    String subdir;
+    String[] subdirs;
+    File folder = new File(path);
+    File[] listOfFiles = folder.listFiles();
 
-    int nFOV;
+    int nFOV = 0;
     String wellStr;
     String temp[];
     int row;
     int col;
 
-    int nRows;
-    int nCols;
+    int nRows = 0;
+    int nCols = 0;
     
-    
-    /*
-
     ArrayList<String> dirList = new ArrayList<String>();
 
     for (int i = 0; i < listOfFiles.length; i++) {
@@ -218,11 +215,10 @@ public class TiffStackToSPW {
    
     // set up ome-tiff writer here
     FileWriteSPW SPWWriter = new FileWriteSPW(fileOut);
-    boolean ok = SPWWriter.init(nFovInWell, sizeX, sizeY, sizet);
+    boolean ok = SPWWriter.init(nFovInWell, sizeX, sizeY, sizet, delayList);
     byte[] plane;
     
     if (ok)  {
-      SPWWriter.setupModulo(delayList);
       for (int f = 0; f< nFOV; f++)  {
         subdir = dirList.get(f);
         subPath = path + "/" + subdir;
@@ -236,44 +232,8 @@ public class TiffStackToSPW {
       }
       
       SPWWriter.cleanup();
-      } */
-     // set up ome-tiff writer here
-    
-    int pixelType = FormatTools.UINT16;
-    nRows = 2;
-    nCols = 2;
-    int[][] nFovInWell = new int[nRows][nCols];
-    for (row = 0; row < nRows; row++) {
-      for (col = 0; col < nCols; col++) {
-        nFovInWell[row][col] = 2;
-      }
-    }
-    int sizeX = 4;
-    int sizeY = 4;
-    int sizet = 3;
-    
-    FileWriteSPW SPWWriter = new FileWriteSPW(fileOut);
-    TiffStackToSPW reader = new TiffStackToSPW();
-    
-    byte[] plane;
-    ArrayList<String> delayList = new ArrayList<>();
-    delayList.add("1000");
-    delayList.add("2000");
-    delayList.add("3000");
-    
-    boolean ok = SPWWriter.init(nFovInWell, sizeX, sizeY, sizet, delayList);
-    
-    nFOV = nRows * nCols * 2;
-    
-    if (ok)  {
-      for (int f = 0; f< nFOV; f++)  { 
-        for (int t = 0; t< sizet; t++)  {
-          plane = reader.createImage(sizeX, sizeY, pixelType, t, f);
-          SPWWriter.export(plane, f, t);
-        }
-      }
-      SPWWriter.cleanup();
-      }  
+      } 
+     
   }  
 }
 
