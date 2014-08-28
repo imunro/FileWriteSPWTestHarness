@@ -227,6 +227,29 @@ public class TiffStackToSPW {
           id = subPath + "/" + fname;
           reader.setId(id);
           plane = reader.openBytes(0);
+          
+          // code to handle the ridiculous Labview MSB!
+          ByteBuffer bb = ByteBuffer.wrap(plane); // Wrapper around underlying byte[].
+          bb.order(ByteOrder.LITTLE_ENDIAN);
+          
+          short s;
+          // first find min in image
+          short min = bb.getShort(0);
+          for (int i = 0; i < plane.length ; i+=2) {
+            s = (short)bb.getShort(i);
+            if (s < min) {  
+              min = s;
+            }
+          }
+          
+          if (min > 32500)  {
+            byte mask = 0x7F;
+            for (int b  = 0; b < plane.length ; b+=2) {
+              plane[b] = (byte) (plane[b] & mask);
+            }
+          }
+
+          
           SPWWriter.export(plane, f, t);
         }
       }
