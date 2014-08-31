@@ -215,7 +215,12 @@ public class TiffStackToSPW {
    
     // set up ome-tiff writer here
     FileWriteSPW SPWWriter = new FileWriteSPW(fileOut);
-    boolean ok = SPWWriter.init(nFovInWell, sizeX, sizeY, sizet, delayList);
+    Double[] exposureTimes = new Double[sizet];
+    for (int t = 0; t < sizet; t++)  {
+      exposureTimes[t] = 1000.0;
+    }
+    
+    boolean ok = SPWWriter.init(nFovInWell, sizeX, sizeY, sizet, delayList, exposureTimes);
     byte[] plane;
     
     if (ok)  {
@@ -229,21 +234,23 @@ public class TiffStackToSPW {
           plane = reader.openBytes(0);
           
           // code to handle the ridiculous Labview MSB!
-          ByteBuffer bb = ByteBuffer.wrap(plane); // Wrapper around underlying byte[].
-          bb.order(ByteOrder.LITTLE_ENDIAN);
-          
-          short s;
-          // first find min in image
-          short min = bb.getShort(0);
-          for (int i = 0; i < plane.length ; i+=2) {
-            s = (short)bb.getShort(i);
-            if (s < min) {  
-              min = s;
-            }
+          // check if MSB is set in all pixels
+          byte mask = (byte)0x80;
+          int msbCount = 0;
+          int wierdCount = 0;
+          for (int b = 0; b < plane.length ; b+=2) {
+             byte bb =  plane[b];
+             if ((bb & mask) == mask) {
+               msbCount++;
+             }  
+             else   {
+               byte debug = bb;
+               byte debug2 = plane[b + 1];
+               wierdCount++;
+             }
           }
           
-          if (min > 32500)  {
-            byte mask = 0x7F;
+          if (msbCount == plane.length/2)  {
             for (int b  = 0; b < plane.length ; b+=2) {
               plane[b] = (byte) (plane[b] & mask);
             }

@@ -114,7 +114,12 @@ public class FileWriteSPWTestHarness {
     delayList.add("2000");
     delayList.add("3000");
     
-    boolean ok = SPWWriter.init(nFovInWell, sizeX, sizeY, sizet, delayList);
+    Double[] exposureTimes = new Double[sizet];
+    for (int t = 0; t < sizet; t++)  {
+      exposureTimes[t] = 1000.0;
+    }
+    
+    boolean ok = SPWWriter.init(nFovInWell, sizeX, sizeY, sizet, delayList, exposureTimes);
     
     int nImages = nRows * nCols * nFOV;
     
