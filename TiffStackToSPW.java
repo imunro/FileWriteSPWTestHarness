@@ -233,29 +233,25 @@ public class TiffStackToSPW {
           reader.setId(id);
           plane = reader.openBytes(0);
           
-          // code to handle the ridiculous Labview MSB!
-          // check if MSB is set in all pixels
-          byte mask = (byte)0x80;
-          int msbCount = 0;
-          int wierdCount = 0;
-          for (int b = 0; b < plane.length ; b+=2) {
-             byte bb =  plane[b];
-             if ((bb & mask) == mask) {
-               msbCount++;
-             }  
-             else   {
-               byte debug = bb;
-               byte debug2 = plane[b + 1];
-               wierdCount++;
-             }
+          // code to handle the ridiculous Labview signed storage!
+          ByteBuffer bb = ByteBuffer.wrap(plane); // Wrapper around underlying byte[].
+          bb.order(ByteOrder.LITTLE_ENDIAN);
+          short s;
+          short min = (short)32768;
+          for (int i = 0; i < plane.length ; i+=2) {
+            s = (short)bb.getShort(i);
+            if (s < min ) { 
+              min = s;
+              break;       
+            } 
           }
           
-          if (msbCount == plane.length/2)  {
-            for (int b  = 0; b < plane.length ; b+=2) {
-              plane[b] = (byte) (plane[b] & mask);
+          if (min > 32767)  {
+            for (int i = 0; i < plane.length ; i+=2) {
+              s = (short)bb.getShort(i);
+              bb.putShort(i, (short) (s - 32768));
             }
-          }
-
+          }        
           
           SPWWriter.export(plane, f, t);
         }
