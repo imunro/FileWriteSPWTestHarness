@@ -215,7 +215,7 @@ public class TiffStackToSPW {
    
     // set up ome-tiff writer here
     FileWriteSPW SPWWriter = new FileWriteSPW(fileOut);
-    Double[] exposureTimes = new Double[sizet];
+    double[] exposureTimes = new double[sizet];
     for (int t = 0; t < sizet; t++)  {
       exposureTimes[t] = 1000.0;
     }
