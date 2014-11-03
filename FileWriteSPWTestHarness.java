@@ -105,7 +105,8 @@ public class FileWriteSPWTestHarness {
     int sizeY = 4;
     int sizet = 3;
     
-    FileWriteSPW SPWWriter = new FileWriteSPW(fileOut);
+    String plateDescription = " Non_FLIM test plate data";
+    FileWriteSPW SPWWriter = new FileWriteSPW(fileOut, plateDescription);
     FileWriteSPWTestHarness reader = new FileWriteSPWTestHarness();
     
     byte[] plane;
