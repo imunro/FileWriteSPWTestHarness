@@ -1,4 +1,4 @@
-/*
+  /*
  * #%L
  * OME Bio-Formats package for reading and converting biological file formats.
  * %%

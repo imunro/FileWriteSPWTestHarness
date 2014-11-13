@@ -30,6 +30,9 @@ import java.nio.ByteOrder;
 import java.nio.file.Path;
 import java.io.File;
 import java.util.ArrayList;
+import loci.common.ByteArrayHandle;
+import loci.common.RandomAccessInputStream;
+import loci.common.RandomAccessOutputStream;
 
 import loci.formats.services.OMEXMLService;
 import loci.formats.ChannelFiller;
@@ -95,8 +98,9 @@ public class TiffStackToSPW {
   public static void main(String[] args) throws Exception {
     
     // Directory path here
-    String path = "/Users/imunro/globalprocessing/GlobalProcessingFrontEnd/ParisMeetingData/2012-07-26_16-59-47";
-    String fileOut  = path + "/" + "SPWFromJava.ome.tiff";
+    String path = "/Users/imunro/FLIMfit/FLIMfitFrontEnd/RASSF_FLIMAcceptor/Collated data/GFP";
+    //String path = "/Users/imunro/globalprocessing/GlobalProcessingFrontEnd/ParisMeetingData/2012-07-26_16-59-47";
+    String fileOut  = path + "/" + "RASSF_FLIM_GFP.ome.tiff";
     
     
     String subdir;
@@ -214,46 +218,64 @@ public class TiffStackToSPW {
     int sizeY = reader.getSizeY();
    
     // set up ome-tiff writer here
-    FileWriteSPW SPWWriter = new FileWriteSPW(fileOut);
+    FileWriteSPW SPWWriter = new FileWriteSPW(fileOut, "FLIM data for RASSF_FLIM Plate");
     double[] exposureTimes = new double[sizet];
     for (int t = 0; t < sizet; t++)  {
       exposureTimes[t] = 1000.0;
     }
     
     boolean ok = SPWWriter.init(nFovInWell, sizeX, sizeY, sizet, delayList, exposureTimes);
+    
+    //Alternative init for non_FLIM data
+    //boolean ok = SPWWriter.init(nFovInWell, sizeX, sizeY);
+    //sizet = 1;
+    
     byte[] plane;
     
     if (ok)  {
       for (int f = 0; f< nFOV; f++)  {
         subdir = dirList.get(f);
         subPath = path + "/" + subdir;
+        
+        int pixelType = reader.getPixelType();
+        boolean sgn = loci.formats.FormatTools.isSigned(pixelType);
+
         for (int t = 0; t< sizet; t++)  {
           fname = fnameList.get(t);
           id = subPath + "/" + fname;
           reader.setId(id);
           plane = reader.openBytes(0);
+          boolean little = reader.isLittleEndian();
           
           // code to handle the ridiculous Labview signed storage!
-          ByteBuffer bb = ByteBuffer.wrap(plane); // Wrapper around underlying byte[].
-          bb.order(ByteOrder.LITTLE_ENDIAN);
-          short s;
-          short min = (short)32768;
+          RandomAccessInputStream teststream = new RandomAccessInputStream(plane);
+          teststream.order(little);
+          
+          int min = (short)32767;
           for (int i = 0; i < plane.length ; i+=2) {
-            s = (short)bb.getShort(i);
-            if (s < min ) { 
-              min = s;
+            int ui  = teststream.readUnsignedShort();
+            if (ui < min ) { 
+              min = ui;
               break;       
-            } 
+            }  
           }
           
-          if (min > 32767)  {
-            for (int i = 0; i < plane.length ; i+=2) {
-              s = (short)bb.getShort(i);
-              bb.putShort(i, (short) (s - 32768));
-            }
-          }        
+          short[] outPlane  = new short[plane.length/2];
           
-          SPWWriter.export(plane, f, t);
+          
+          RandomAccessInputStream instream = new RandomAccessInputStream(plane);
+          instream.order(little);
+           
+          for (int i = 0; i < plane.length/2 ; i++) {
+              int ui = instream.readUnsignedShort();
+              if (min > 32766)  {
+                ui -= 32768;
+              }
+              outPlane[i] = (short)ui;
+            
+          }    
+          
+          SPWWriter.export(outPlane, f, t);
         }
       }
       
