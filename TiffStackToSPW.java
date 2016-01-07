@@ -98,9 +98,9 @@ public class TiffStackToSPW {
   public static void main(String[] args) throws Exception {
     
     // Directory path here
-    String path = "/Users/imunro/FLIMfit/FLIMfitFrontEnd/RASSF_FLIMAcceptor/Collated data/GFP";
-    //String path = "/Users/imunro/globalprocessing/GlobalProcessingFrontEnd/ParisMeetingData/2012-07-26_16-59-47";
-    String fileOut  = path + "/" + "RASSF_FLIM_GFP.ome.tiff";
+    //String path = "/Users/imunro/FLIMfit/FLIMfitFrontEnd/RASSF_FLIMAcceptor/Collated data/GFP";
+    String path = "/Users/imunro/globalprocessing/GlobalProcessingFrontEnd/ParisMeetingData/2012-07-26_16-59-47";
+    String fileOut  = path + "/" + "WIDEFIELD_PARIS.ome.tiff";
     
     
     String subdir;
@@ -218,7 +218,7 @@ public class TiffStackToSPW {
     int sizeY = reader.getSizeY();
    
     // set up ome-tiff writer here
-    FileWriteSPW SPWWriter = new FileWriteSPW(fileOut, "FLIM data for RASSF_FLIM Plate");
+    FileWriteSPW SPWWriter = new FileWriteSPW(fileOut, "Widefield FLIM data Plate");
     double[] exposureTimes = new double[sizet];
     for (int t = 0; t < sizet; t++)  {
       exposureTimes[t] = 1000.0;
