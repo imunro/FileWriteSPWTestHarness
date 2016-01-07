@@ -128,6 +128,9 @@ public class FileWriteSPWTestHarness {
     
     int nImages = nRows * nCols * nFOV;
     
+    // simulate an Abort  by not writing alll the FOVS !!
+    //nImages -= 2;
+    
     if (ok)  {
       for (int f = 0; f< nImages; f++)  { 
         for (int t = 0; t< sizet; t++)  {
