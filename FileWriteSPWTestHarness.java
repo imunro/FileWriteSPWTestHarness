@@ -135,7 +135,8 @@ public class FileWriteSPWTestHarness {
       for (int f = 0; f< nImages; f++)  { 
         for (int t = 0; t< sizet; t++)  {
           plane = reader.createImage(sizeX, sizeY, pixelType, t, f);
-          SPWWriter.export(plane, f, t);
+          String imageDescription = "Description" + Integer.toString(f);
+          SPWWriter.export(plane, f, t, imageDescription);
         }
       }
       SPWWriter.cleanup();
